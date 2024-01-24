@@ -18,10 +18,26 @@ use Rindow\OpenCL\FFI\Kernel;
 
 class Test extends TestCase
 {
+    static protected int $default_device_type = OpenCL::CL_DEVICE_TYPE_GPU;
+
     public function newDriverFactory()
     {
         $factory = new OpenCLFactory();
         return $factory;
+    }
+
+    public function newContextFromType($ocl)
+    {
+        try {
+            $context = $ocl->Context(self::$default_device_type);
+        } catch(RuntimeException $e) {
+            if(strpos('clCreateContextFromType',$e->getMessage())===null) {
+                throw $e;
+            }
+            self::$default_device_type = OpenCL::CL_DEVICE_TYPE_DEFAULT;
+            $context = $ocl->Context(self::$default_device_type);
+        }
+        return $context;
     }
 
     public function newHostBufferFactory()
@@ -48,8 +64,7 @@ class Test extends TestCase
         $factory = $this->newDriverFactory();
         $platforms = $factory->PlatformList();
         $driver = $factory->DeviceList($platforms);
-        $this->assertInstanceOf(DeviceList::class,$driver);
-    }
+        $this->assertInstanceOf(DeviceList::class,$driver);    }
 
     public function testContext()
     {
@@ -59,15 +74,15 @@ class Test extends TestCase
         $driver = $factory->Context($devices);
         $this->assertInstanceOf(Context::class,$driver);
 
-        // Specify GPU directly
-        $driver = $factory->Context(OpenCL::CL_DEVICE_TYPE_GPU);
+        // Specify device type directly
+        $driver = $this->newContextFromType($factory);
         $this->assertInstanceOf(Context::class,$driver);
     }
 
     public function testEventList()
     {
         $factory = $this->newDriverFactory();
-        $context = $factory->Context(OpenCL::CL_DEVICE_TYPE_GPU);
+        $context = $this->newContextFromType($factory);
         $driver = $factory->EventList($context);
         $this->assertInstanceOf(EventList::class,$driver);
     }
@@ -75,7 +90,7 @@ class Test extends TestCase
     public function testCommandQueue()
     {
         $factory = $this->newDriverFactory();
-        $context = $factory->Context(OpenCL::CL_DEVICE_TYPE_GPU);
+        $context = $this->newContextFromType($factory);
         $driver = $factory->CommandQueue($context);
         $this->assertInstanceOf(CommandQueue::class,$driver);
     }
@@ -94,7 +109,7 @@ class Test extends TestCase
         ];
     
         $factory = $this->newDriverFactory();
-        $context = $factory->Context(OpenCL::CL_DEVICE_TYPE_GPU);
+        $context = $this->newContextFromType($factory);
         $driver = $factory->Program(
             $context,
             $sources,
@@ -117,7 +132,7 @@ class Test extends TestCase
             $hostBuffer[$value] = $value;
         }
         
-        $context = $factory->Context(OpenCL::CL_DEVICE_TYPE_GPU);
+        $context = $this->newContextFromType($factory);
         $driver = $factory->Buffer(
             $context,
             $size*32/8,
@@ -143,7 +158,7 @@ class Test extends TestCase
         ];
     
         $factory = $this->newDriverFactory();
-        $context = $factory->Context(OpenCL::CL_DEVICE_TYPE_GPU);
+        $context = $this->newContextFromType($factory);
 
         $program = $factory->Program(
             $context,

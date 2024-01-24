@@ -10,12 +10,27 @@ class Test extends TestCase
 {
     protected bool $skipDisplayInfo = true;
     //protected int $default_device_type = OpenCL::CL_DEVICE_TYPE_DEFAULT;
-    protected int $default_device_type = OpenCL::CL_DEVICE_TYPE_GPU;
+    //protected int $default_device_type = OpenCL::CL_DEVICE_TYPE_GPU;
+    static protected int $default_device_type = OpenCL::CL_DEVICE_TYPE_GPU;
 
     public function newDriverFactory()
     {
         $factory = new OpenCLFactory();
         return $factory;
+    }
+
+    public function newContextFromType($ocl)
+    {
+        try {
+            $context = $ocl->Context(self::$default_device_type);
+        } catch(RuntimeException $e) {
+            if(strpos('clCreateContextFromType',$e->getMessage())===null) {
+                throw $e;
+            }
+            self::$default_device_type = OpenCL::CL_DEVICE_TYPE_DEFAULT;
+            $context = $ocl->Context(self::$default_device_type);
+        }
+        return $context;
     }
 
     public function testIsAvailable()
@@ -40,7 +55,7 @@ class Test extends TestCase
     public function testConstructUserEvent()
     {
         $ocl = $this->newDriverFactory();
-        $context = $ocl->Context($this->default_device_type);
+        $context = $this->newContextFromType($ocl);
         $events2 = $ocl->EventList($context);
         $this->assertTrue(count($events2)==1);
     }
@@ -51,7 +66,7 @@ class Test extends TestCase
     public function testMoveAndCopy()
     {
         $ocl = $this->newDriverFactory();
-        $context = $ocl->Context($this->default_device_type);
+        $context = $this->newContextFromType($ocl);
         $events1 = $ocl->EventList();
         $events2 = $ocl->EventList($context);
         $events3 = $ocl->EventList($context);
@@ -72,7 +87,7 @@ class Test extends TestCase
     public function testSetStatus()
     {
         $ocl = $this->newDriverFactory();
-        $context = $ocl->Context($this->default_device_type);
+        $context = $this->newContextFromType($ocl);
         $events3 = $ocl->EventList($context);
 
         $this->assertTrue(count($events3)==1);

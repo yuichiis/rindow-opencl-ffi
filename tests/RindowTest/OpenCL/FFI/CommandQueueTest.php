@@ -13,7 +13,8 @@ class Test extends TestCase
 {
     protected bool $skipDisplayInfo = true;
     //protected int $default_device_type = OpenCL::CL_DEVICE_TYPE_DEFAULT;
-    protected int $default_device_type = OpenCL::CL_DEVICE_TYPE_GPU;
+    //protected int $default_device_type = OpenCL::CL_DEVICE_TYPE_GPU;
+    static protected int $default_device_type = OpenCL::CL_DEVICE_TYPE_GPU;
 
     public function newDriverFactory()
     {
@@ -25,6 +26,20 @@ class Test extends TestCase
     {
         $factory = new BufferFactory();
         return $factory;
+    }
+
+    public function newContextFromType($ocl)
+    {
+        try {
+            $context = $ocl->Context(self::$default_device_type);
+        } catch(RuntimeException $e) {
+            if(strpos('clCreateContextFromType',$e->getMessage())===null) {
+                throw $e;
+            }
+            self::$default_device_type = OpenCL::CL_DEVICE_TYPE_DEFAULT;
+            $context = $ocl->Context(self::$default_device_type);
+        }
+        return $context;
     }
 
     public function testIsAvailable()
@@ -39,7 +54,7 @@ class Test extends TestCase
     public function testConstructByDefault()
     {
         $ocl = $this->newDriverFactory();
-        $context = $ocl->Context($this->default_device_type);
+        $context = $this->newContextFromType($ocl);
         $queue = $ocl->CommandQueue($context);
         $this->assertInstanceof(CommandQueue::class,$queue);
     }
@@ -50,7 +65,7 @@ class Test extends TestCase
     public function testFlushAndFinish()
     {
         $ocl = $this->newDriverFactory();
-        $context = $ocl->Context($this->default_device_type);
+        $context = $this->newContextFromType($ocl);
         $queue = $ocl->CommandQueue($context);
         $this->assertInstanceof(CommandQueue::class,$queue);
 
@@ -75,7 +90,7 @@ class Test extends TestCase
     public function testGetContext()
     {
         $ocl = $this->newDriverFactory();
-        $context = $ocl->Context($this->default_device_type);
+        $context = $this->newContextFromType($ocl);
         $queue = $ocl->CommandQueue($context);
         
         $getContext = $queue->getContext();
@@ -88,7 +103,7 @@ class Test extends TestCase
     public function testGetInformation()
     {
         $ocl = $this->newDriverFactory();
-        $context = $ocl->Context($this->default_device_type);
+        $context = $this->newContextFromType($ocl);
         $queue = $ocl->CommandQueue($context);
 
         $this->assertTrue(1==$queue->getInfo(OpenCL::CL_QUEUE_REFERENCE_COUNT));

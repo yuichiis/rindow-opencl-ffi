@@ -114,7 +114,17 @@ class Test extends TestCase
         $this->assertTrue($total_dev>=0);
 
         foreach([OpenCL::CL_DEVICE_TYPE_GPU,OpenCL::CL_DEVICE_TYPE_CPU] as $type) {
-            $context = $ocl->Context($type);
+            try {
+                $context = $ocl->Context($type);
+            } catch(RuntimeException $e) {
+                if(strpos('clCreateContextFromType',$e->getMessage())===null) {
+                    throw $e;
+                }
+                $context = null;
+            }
+            if($context==null) {
+                continue;
+            }
             $this->assertTrue(1==$context->getInfo(OpenCL::CL_CONTEXT_REFERENCE_COUNT));
 
             $devices = $context->getInfo(OpenCL::CL_CONTEXT_DEVICES);

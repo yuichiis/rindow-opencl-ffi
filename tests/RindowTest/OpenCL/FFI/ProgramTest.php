@@ -13,12 +13,27 @@ class Test extends TestCase
 {
     protected bool $skipDisplayInfo = true;
     //protected int $default_device_type = OpenCL::CL_DEVICE_TYPE_DEFAULT;
-    protected int $default_device_type = OpenCL::CL_DEVICE_TYPE_GPU;
+    //protected int $default_device_type = OpenCL::CL_DEVICE_TYPE_GPU;
+    static protected int $default_device_type = OpenCL::CL_DEVICE_TYPE_GPU;
 
     public function newDriverFactory()
     {
         $factory = new OpenCLFactory();
         return $factory;
+    }
+
+    public function newContextFromType($ocl)
+    {
+        try {
+            $context = $ocl->Context(self::$default_device_type);
+        } catch(RuntimeException $e) {
+            if(strpos('clCreateContextFromType',$e->getMessage())===null) {
+                throw $e;
+            }
+            self::$default_device_type = OpenCL::CL_DEVICE_TYPE_DEFAULT;
+            $context = $ocl->Context(self::$default_device_type);
+        }
+        return $context;
     }
 
     public function newHostBufferFactory()
@@ -74,7 +89,7 @@ class Test extends TestCase
     public function testConstructAndBuild()
     {
         $ocl = $this->newDriverFactory();
-        $context = $ocl->Context($this->default_device_type);
+        $context = $this->newContextFromType($ocl);
         $devices = $context->getInfo(OpenCL::CL_CONTEXT_DEVICES);
         $dev_version = $devices->getInfo(0,OpenCL::CL_DEVICE_VERSION);
         //$dev_version = 'OpenCL 1.1 Mesa';
@@ -115,7 +130,7 @@ class Test extends TestCase
             "   y[gid] = a* x[gid] + y[gid];\n".
             "}\n"
         ];
-        $context = $ocl->Context($this->default_device_type);
+        $context = $this->newContextFromType($ocl);
         $program = $ocl->Program($context,$sources,
             $mode=0,$devices=null,$options=null);
         try {
@@ -132,7 +147,7 @@ class Test extends TestCase
     public function testCompileAndLink()
     {
         $ocl = $this->newDriverFactory();
-        $context = $ocl->Context($this->default_device_type);
+        $context = $this->newContextFromType($ocl);
 
         $devices = $context->getInfo(OpenCL::CL_CONTEXT_DEVICES);
         $dev_version = $devices->getInfo(0,OpenCL::CL_DEVICE_VERSION);
@@ -206,7 +221,7 @@ class Test extends TestCase
     public function testGetInfo()
     {
         $ocl = $this->newDriverFactory();
-        $context = $ocl->Context($this->default_device_type);
+        $context = $this->newContextFromType($ocl);
 
         $devices = $context->getInfo(OpenCL::CL_CONTEXT_DEVICES);
         $dev_version = $devices->getInfo(0,OpenCL::CL_DEVICE_VERSION);
