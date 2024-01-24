@@ -8,6 +8,7 @@ use Rindow\Math\Buffer\FFI\BufferFactory;
 use Rindow\OpenCL\FFI\OpenCLFactory;
 
 use Rindow\OpenCL\FFI\Program;
+use RuntimeException;
 
 class Test extends TestCase
 {

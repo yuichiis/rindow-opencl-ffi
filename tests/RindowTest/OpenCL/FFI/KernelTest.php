@@ -6,6 +6,7 @@ use Interop\Polite\Math\Matrix\NDArray;
 use Interop\Polite\Math\Matrix\OpenCL;
 use Rindow\Math\Buffer\FFI\BufferFactory;
 use Rindow\OpenCL\FFI\OpenCLFactory;
+use RuntimeException;
 
 class Test extends TestCase
 {

@@ -15,6 +15,7 @@ use Rindow\OpenCL\FFI\CommandQueue;
 use Rindow\OpenCL\FFI\Program;
 use Rindow\OpenCL\FFI\Buffer as OpenCLBuffer;
 use Rindow\OpenCL\FFI\Kernel;
+use RuntimeException;
 
 class Test extends TestCase
 {

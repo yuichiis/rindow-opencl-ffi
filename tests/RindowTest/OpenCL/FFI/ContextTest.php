@@ -9,6 +9,7 @@ use Rindow\OpenCL\FFI\OpenCLFactory;
 
 use Rindow\OpenCL\FFI\DeviceList;
 use Rindow\OpenCL\FFI\Context;
+use RuntimeException;
 
 class Test extends TestCase
 {
