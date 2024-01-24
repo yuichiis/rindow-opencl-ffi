@@ -8,17 +8,33 @@ use Rindow\Math\Buffer\FFI\BufferFactory;
 use Rindow\OpenCL\FFI\OpenCLFactory;
 
 use TypeError;
+use RuntimeException;
 
 class Test extends TestCase
 {
     protected bool $skipDisplayInfo = true;
     //protected int $default_device_type = OpenCL::CL_DEVICE_TYPE_DEFAULT;
-    protected int $default_device_type = OpenCL::CL_DEVICE_TYPE_GPU;
+    //protected int $default_device_type = OpenCL::CL_DEVICE_TYPE_GPU;
+    static protected int $default_device_type = OpenCL::CL_DEVICE_TYPE_GPU;
 
     public function newDriverFactory()
     {
         $factory = new OpenCLFactory();
         return $factory;
+    }
+
+    public function newContextFromType($ocl)
+    {
+        try {
+            $context = $ocl->Context(self::$default_device_type);
+        } catch(RuntimeException $e) {
+            if(strpos('clCreateContextFromType',$e->getMessage())===null) {
+                throw $e;
+            }
+            self::$default_device_type = OpenCL::CL_DEVICE_TYPE_DEFAULT;
+            $context = $ocl->Context(self::$default_device_type);
+        }
+        return $context;
     }
 
     public function newHostBufferFactory()
@@ -39,7 +55,7 @@ class Test extends TestCase
     public function testConstructBuffer()
     {
         $ocl = $this->newDriverFactory();
-        $context = $ocl->Context($this->default_device_type);
+        $context = $this->newContextFromType($ocl);
         $devices = $context->getInfo(OpenCL::CL_CONTEXT_DEVICES);
         $dev_version = $devices->getInfo(0,OpenCL::CL_DEVICE_VERSION);
         // $dev_version = 'OpenCL 1.1 Mesa';
@@ -67,7 +83,7 @@ class Test extends TestCase
     public function testConstructPureBuffer()
     {
         $ocl = $this->newDriverFactory();
-        $context = $ocl->Context($this->default_device_type);
+        $context = $this->newContextFromType($ocl);
         $devices = $context->getInfo(OpenCL::CL_CONTEXT_DEVICES);
         $dev_version = $devices->getInfo(0,OpenCL::CL_DEVICE_VERSION);
         // $dev_version = 'OpenCL 1.1 Mesa';
@@ -96,7 +112,7 @@ class Test extends TestCase
     public function testConstructBufferWithNull()
     {
         $ocl = $this->newDriverFactory();
-        $context = $ocl->Context($this->default_device_type);
+        $context = $this->newContextFromType($ocl);
         $devices = $context->getInfo(OpenCL::CL_CONTEXT_DEVICES);
         $dev_version = $devices->getInfo(0,OpenCL::CL_DEVICE_VERSION);
         // $dev_version = 'OpenCL 1.1 Mesa';
@@ -113,7 +129,7 @@ class Test extends TestCase
     public function testConstructBufferWithHostBuffer()
     {
         $ocl = $this->newDriverFactory();
-        $context = $ocl->Context($this->default_device_type);
+        $context = $this->newContextFromType($ocl);
         $devices = $context->getInfo(OpenCL::CL_CONTEXT_DEVICES);
         $dev_version = $devices->getInfo(0,OpenCL::CL_DEVICE_VERSION);
         // $dev_version = 'OpenCL 1.1 Mesa';
@@ -144,7 +160,7 @@ class Test extends TestCase
     public function testTypeConstraint()
     {
         $ocl = $this->newDriverFactory();
-        $context = $ocl->Context($this->default_device_type);
+        $context = $this->newContextFromType($ocl);
 
         $this->expectException(TypeError::class);
         //$this->expectExceptionMessage('??????????????????');
@@ -162,7 +178,7 @@ class Test extends TestCase
     public function testBlockingReadBuffer()
     {
         $ocl = $this->newDriverFactory();
-        $context = $ocl->Context($this->default_device_type);
+        $context = $this->newContextFromType($ocl);
         $devices = $context->getInfo(OpenCL::CL_CONTEXT_DEVICES);
         $dev_version = $devices->getInfo(0,OpenCL::CL_DEVICE_VERSION);
         // $dev_version = 'OpenCL 1.1 Mesa';
@@ -196,7 +212,7 @@ class Test extends TestCase
     public function testNonBlockingReadBuffer()
     {
         $ocl = $this->newDriverFactory();
-        $context = $ocl->Context($this->default_device_type);
+        $context = $this->newContextFromType($ocl);
         $devices = $context->getInfo(OpenCL::CL_CONTEXT_DEVICES);
         $dev_version = $devices->getInfo(0,OpenCL::CL_DEVICE_VERSION);
         // $dev_version = 'OpenCL 1.1 Mesa';
@@ -243,7 +259,7 @@ class Test extends TestCase
     public function testBlockingReadWithNullArguments()
     {
         $ocl = $this->newDriverFactory();
-        $context = $ocl->Context($this->default_device_type);
+        $context = $this->newContextFromType($ocl);
         $devices = $context->getInfo(OpenCL::CL_CONTEXT_DEVICES);
         $dev_version = $devices->getInfo(0,OpenCL::CL_DEVICE_VERSION);
         // $dev_version = 'OpenCL 1.1 Mesa';
@@ -276,7 +292,7 @@ class Test extends TestCase
     public function testReadWithInvalidObjectArguments()
     {
         $ocl = $this->newDriverFactory();
-        $context = $ocl->Context($this->default_device_type);
+        $context = $this->newContextFromType($ocl);
         $queue = $ocl->CommandQueue($context);
 
         $buffer = $ocl->Buffer(
@@ -298,7 +314,7 @@ class Test extends TestCase
     public function testBlockingWriteBuffer()
     {
         $ocl = $this->newDriverFactory();
-        $context = $ocl->Context($this->default_device_type);
+        $context = $this->newContextFromType($ocl);
         $devices = $context->getInfo(OpenCL::CL_CONTEXT_DEVICES);
         $dev_version = $devices->getInfo(0,OpenCL::CL_DEVICE_VERSION);
         // $dev_version = 'OpenCL 1.1 Mesa';
@@ -333,7 +349,7 @@ class Test extends TestCase
     public function testNonBlockingWriteBuffer()
     {
         $ocl = $this->newDriverFactory();
-        $context = $ocl->Context($this->default_device_type);
+        $context = $this->newContextFromType($ocl);
         $devices = $context->getInfo(OpenCL::CL_CONTEXT_DEVICES);
         $dev_version = $devices->getInfo(0,OpenCL::CL_DEVICE_VERSION);
         // $dev_version = 'OpenCL 1.1 Mesa';
@@ -386,7 +402,7 @@ class Test extends TestCase
     public function testBlockingWriteWithNullArguments()
     {
         $ocl = $this->newDriverFactory();
-        $context = $ocl->Context($this->default_device_type);
+        $context = $this->newContextFromType($ocl);
         $devices = $context->getInfo(OpenCL::CL_CONTEXT_DEVICES);
         $dev_version = $devices->getInfo(0,OpenCL::CL_DEVICE_VERSION);
         // $dev_version = 'OpenCL 1.1 Mesa';
@@ -421,7 +437,7 @@ class Test extends TestCase
     public function testWriteWithInvalidObjectArguments()
     {
         $ocl = $this->newDriverFactory();
-        $context = $ocl->Context($this->default_device_type);
+        $context = $this->newContextFromType($ocl);
         $queue = $ocl->CommandQueue($context);
         $buffer = $ocl->Buffer(
             $context,
@@ -443,7 +459,7 @@ class Test extends TestCase
     public function testReadAndWriteBufferWithWaitEventList()
     {
         $ocl = $this->newDriverFactory();
-        $context = $ocl->Context($this->default_device_type);
+        $context = $this->newContextFromType($ocl);
         $devices = $context->getInfo(OpenCL::CL_CONTEXT_DEVICES);
         $dev_version = $devices->getInfo(0,OpenCL::CL_DEVICE_VERSION);
         // $dev_version = 'OpenCL 1.1 Mesa';
@@ -507,7 +523,7 @@ class Test extends TestCase
     public function testFillDefaults()
     {
         $ocl = $this->newDriverFactory();
-        $context = $ocl->Context($this->default_device_type);
+        $context = $this->newContextFromType($ocl);
         $devices = $context->getInfo(OpenCL::CL_CONTEXT_DEVICES);
         $dev_version = $devices->getInfo(0,OpenCL::CL_DEVICE_VERSION);
         // $dev_version = 'OpenCL 1.1 Mesa';
@@ -546,7 +562,7 @@ class Test extends TestCase
     public function testFillWithNullArguments()
     {
         $ocl = $this->newDriverFactory();
-        $context = $ocl->Context($this->default_device_type);
+        $context = $this->newContextFromType($ocl);
         $devices = $context->getInfo(OpenCL::CL_CONTEXT_DEVICES);
         $dev_version = $devices->getInfo(0,OpenCL::CL_DEVICE_VERSION);
         // $dev_version = 'OpenCL 1.1 Mesa';
@@ -587,7 +603,7 @@ class Test extends TestCase
     public function testFillWithInvalidObjectArguments()
     {
         $ocl = $this->newDriverFactory();
-        $context = $ocl->Context($this->default_device_type);
+        $context = $this->newContextFromType($ocl);
         $devices = $context->getInfo(OpenCL::CL_CONTEXT_DEVICES);
         $dev_version = $devices->getInfo(0,OpenCL::CL_DEVICE_VERSION);
         // $dev_version = 'OpenCL 1.1 Mesa';
@@ -617,7 +633,7 @@ class Test extends TestCase
     public function testCopyDefault()
     {
         $ocl = $this->newDriverFactory();
-        $context = $ocl->Context($this->default_device_type);
+        $context = $this->newContextFromType($ocl);
         $devices = $context->getInfo(OpenCL::CL_CONTEXT_DEVICES);
         $dev_version = $devices->getInfo(0,OpenCL::CL_DEVICE_VERSION);
         // $dev_version = 'OpenCL 1.1 Mesa';
@@ -661,7 +677,7 @@ class Test extends TestCase
     public function testCopyWithNullArguemts()
     {
         $ocl = $this->newDriverFactory();
-        $context = $ocl->Context($this->default_device_type);
+        $context = $this->newContextFromType($ocl);
         $devices = $context->getInfo(OpenCL::CL_CONTEXT_DEVICES);
         $dev_version = $devices->getInfo(0,OpenCL::CL_DEVICE_VERSION);
         // $dev_version = 'OpenCL 1.1 Mesa';
@@ -707,7 +723,7 @@ class Test extends TestCase
     public function testConstructWithExplicitDtype()
     {
         $ocl = $this->newDriverFactory();
-        $context = $ocl->Context($this->default_device_type);
+        $context = $this->newContextFromType($ocl);
 
         $buffer = $ocl->Buffer($context,intval(16*32/8),
             OpenCL::CL_MEM_READ_WRITE,
@@ -724,9 +740,9 @@ class Test extends TestCase
     public function testReadRect()
     {
         $ocl = $this->newDriverFactory();
-        $context = $ocl->Context($this->default_device_type);
+        $context = $this->newContextFromType($ocl);
         $ocl = $this->newDriverFactory();
-        $context = $ocl->Context($this->default_device_type);
+        $context = $this->newContextFromType($ocl);
         $devices = $context->getInfo(OpenCL::CL_CONTEXT_DEVICES);
         $dev_version = $devices->getInfo(0,OpenCL::CL_DEVICE_VERSION);
         // $dev_version = 'OpenCL 1.1 Mesa';
@@ -777,9 +793,9 @@ class Test extends TestCase
     public function testWriteRect()
     {
         $ocl = $this->newDriverFactory();
-        $context = $ocl->Context($this->default_device_type);
+        $context = $this->newContextFromType($ocl);
         $ocl = $this->newDriverFactory();
-        $context = $ocl->Context($this->default_device_type);
+        $context = $this->newContextFromType($ocl);
         $devices = $context->getInfo(OpenCL::CL_CONTEXT_DEVICES);
         $dev_version = $devices->getInfo(0,OpenCL::CL_DEVICE_VERSION);
         // $dev_version = 'OpenCL 1.1 Mesa';
@@ -835,9 +851,9 @@ class Test extends TestCase
     public function testCopyRect()
     {
         $ocl = $this->newDriverFactory();
-        $context = $ocl->Context($this->default_device_type);
+        $context = $this->newContextFromType($ocl);
         $ocl = $this->newDriverFactory();
-        $context = $ocl->Context($this->default_device_type);
+        $context = $this->newContextFromType($ocl);
         $devices = $context->getInfo(OpenCL::CL_CONTEXT_DEVICES);
         $dev_version = $devices->getInfo(0,OpenCL::CL_DEVICE_VERSION);
         // $dev_version = 'OpenCL 1.1 Mesa';
