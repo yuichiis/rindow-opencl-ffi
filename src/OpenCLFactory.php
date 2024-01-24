@@ -10,7 +10,7 @@ use Interop\Polite\Math\Matrix\LinearBuffer as HostBuffer;
 class OpenCLFactory
 {
     private static ?FFI $ffi = null;
-    protected array $libs = ['OpenCL.dll','libopencl.so'];
+    protected array $libs = ['OpenCL.dll','libOpenCL.so.1'];
 
     public function __construct(
         string $headerFile=null,
