@@ -2,16 +2,18 @@
 namespace Rindow\OpenCL\FFI;
 
 use FFI;
-use FFI\Env\Runtime as FFIEnvRuntime;
-use FFI\Env\Status as FFIEnvStatus;
-use FFI\Location\Locator as FFIEnvLocator;
+//use FFI\Env\Runtime as FFIEnvRuntime;
+//use FFI\Env\Status as FFIEnvStatus;
+//use FFI\Location\Locator as FFIEnvLocator;
 use Interop\Polite\Math\Matrix\LinearBuffer as HostBuffer;
+use FFI\Exception as FFIException;
 use RuntimeException;
 
 class OpenCLFactory
 {
     private static ?FFI $ffi = null;
-    protected array $libs = ['OpenCL.dll','libOpenCL.so.1'];
+    protected array $libs_win = ['OpenCL.dll'];
+    protected array $libs_linux = ['libOpenCL.so.1'];
 
     public function __construct(
         string $headerFile=null,
@@ -21,26 +23,46 @@ class OpenCLFactory
         if(self::$ffi!==null) {
             return;
         }
-        //$this->assertExistLibrary('');
-        $headerFile = $headerFile ?? __DIR__ . "/opencl_win.h";
-        $libFiles = $libFiles ?? $this->libs;
+        $headerFile = $headerFile ?? __DIR__ . "/opencl.h";
+        if($libFiles==null) {
+            if(PHP_OS=='Linux') {
+                $libFiles = $this->libs_linux;
+            } elseif(PHP_OS=='WINNT') {
+                $libFiles = $this->libs_win;
+            } else {
+                throw new RuntimeException('Unknown operating system: "'.PHP_OS.'"');
+            }
+        }
         //$ffi = FFI::load($headerFile);
         $code = file_get_contents($headerFile);
-        $pathname = FFIEnvLocator::resolve(...$libFiles);
-        if($pathname) {
-            $ffi = FFI::cdef($code,$pathname);
+        // ***************************************************************
+        // FFI Locator is incompletely implemented. It is often not found.
+        // ***************************************************************
+        //$pathname = FFIEnvLocator::resolve(...$libFiles);
+        //if($pathname) {
+        //    $ffi = FFI::cdef($code,$pathname);
+        //    self::$ffi = $ffi;
+        //}
+        foreach ($libFiles as $filename) {
+            try {
+                $ffi = FFI::cdef($code,$filename);
+            } catch(FFIException $e) {
+                continue;
+            }
             self::$ffi = $ffi;
+            break;
         }
     }
 
     public function isAvailable() : bool
     {
-        $isAvailable = FFIEnvRuntime::isAvailable();
-        if(!$isAvailable) {
-            return false;
-        }
-        $pathname = FFIEnvLocator::resolve(...$this->libs);
-        return $pathname!==null;
+        return self::$ffi!==null;
+        //$isAvailable = FFIEnvRuntime::isAvailable();
+        //if(!$isAvailable) {
+        //    return false;
+        //}
+        //$pathname = FFIEnvLocator::resolve(...$this->libs);
+        //return $pathname!==null;
     }
 
     public function PlatformList() : PlatformList
