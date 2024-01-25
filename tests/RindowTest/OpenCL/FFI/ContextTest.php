@@ -96,8 +96,8 @@ class Test extends TestCase
                 $con_type = $context->getInfo(OpenCL::CL_CONTEXT_DEVICES)->getInfo(0,OpenCL::CL_DEVICE_TYPE);
                 $this->assertTrue(true==($con_type&$type));
                 $count++;
-            } catch(\RuntimeException $e) {
-                echo "Error: ".$e->getMessage()."\n";
+            } catch(RuntimeException $e) {
+                ;
             }
         }
         $this->assertTrue($total_dev==$count);
