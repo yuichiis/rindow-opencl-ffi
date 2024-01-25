@@ -6,6 +6,7 @@ use FFI\Env\Runtime as FFIEnvRuntime;
 use FFI\Env\Status as FFIEnvStatus;
 use FFI\Location\Locator as FFIEnvLocator;
 use Interop\Polite\Math\Matrix\LinearBuffer as HostBuffer;
+use RuntimeException;
 
 class OpenCLFactory
 {
@@ -44,6 +45,9 @@ class OpenCLFactory
 
     public function PlatformList() : PlatformList
     {
+        if(self::$ffi==null) {
+            throw new RuntimeException('opencl library not loaded.');
+        }
         return new PlatformList(self::$ffi);
     }
 
@@ -53,6 +57,9 @@ class OpenCLFactory
         int $deviceType=NULL,
     ) : DeviceList
     {
+        if(self::$ffi==null) {
+            throw new RuntimeException('opencl library not loaded.');
+        }
         return new DeviceList(self::$ffi,$platforms,$index,$deviceType);
     }
 
@@ -60,6 +67,9 @@ class OpenCLFactory
         DeviceList|int $arg
     ) : Context
     {
+        if(self::$ffi==null) {
+            throw new RuntimeException('opencl library not loaded.');
+        }
         return new Context(self::$ffi,$arg);
     }
 
@@ -67,6 +77,9 @@ class OpenCLFactory
         Context $context=null
     ) : EventList
     {
+        if(self::$ffi==null) {
+            throw new RuntimeException('opencl library not loaded.');
+        }
         return new EventList(self::$ffi, $context);
     }
 
@@ -76,6 +89,9 @@ class OpenCLFactory
         object $properties=null,
     ) : CommandQueue
     {
+        if(self::$ffi==null) {
+            throw new RuntimeException('opencl library not loaded.');
+        }
         return new CommandQueue(self::$ffi, $context, $deviceId, $properties);
     }
 
@@ -87,6 +103,9 @@ class OpenCLFactory
         string $options=null,
         ) : Program
     {
+        if(self::$ffi==null) {
+            throw new RuntimeException('opencl library not loaded.');
+        }
         return new Program(self::$ffi, $context, $source, $mode, $deviceList, $options);
     }
 
@@ -99,6 +118,9 @@ class OpenCLFactory
         int $dtype=null,
         ) : Buffer
     {
+        if(self::$ffi==null) {
+            throw new RuntimeException('opencl library not loaded.');
+        }
         return new Buffer(self::$ffi, $context, $size, $flags, $hostBuffer, $hostOffset, $dtype);
     }
 
@@ -108,6 +130,9 @@ class OpenCLFactory
         string $kernelName,
         ) : Kernel
     {
+        if(self::$ffi==null) {
+            throw new RuntimeException('opencl library not loaded.');
+        }
         return new Kernel(self::$ffi, $program, $kernelName);
     }
 }
