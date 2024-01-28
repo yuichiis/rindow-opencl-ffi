@@ -77,7 +77,7 @@ trait Utils
             $s = $ffi->new("char[$len]");
             FFI::memcpy($s,$val,$len);
             $objs[] = $s;
-            $strings[$i] = FFI::cast("char*",FFI::addr($s));
+            $strings[$i] = $ffi->cast("char*",FFI::addr($s));
             $lengths[$i] = $len;
             $i++;
         }
@@ -105,10 +105,10 @@ trait Utils
             $programs[$i] = $val->_getId();
             if($with_names) {
                 $len = strlen($key)+1;
-                $s = FFI::new("char[$len]");
+                $s = $ffi->new("char[$len]");
                 FFI::memcpy($s,$key."\0",$len);
                 $objs[] = $s;
-                $index_names[$i] = FFI::cast("char*",FFI::addr($s));
+                $index_names[$i] = $ffi->cast("char*",FFI::addr($s));
             }
             $i++;
         }

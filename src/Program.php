@@ -157,7 +157,7 @@ class Program
         $options_obj = null;
         if($options) {
             $len = strlen($options)+1;
-            $options_obj = FFI::new("char[$len]");
+            $options_obj = $ffi->new("char[$len]");
             FFI::memcpy($options_obj,$options."\0",$len);
         }
         $errcode_ret = $ffi->clBuildProgram(

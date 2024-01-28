@@ -90,7 +90,7 @@ class Kernel
             if(!isset(self::$typeString[$dtype])) {
                 throw new InvalidArgumentException("Unsuppored binding data type for integer or float:($dtype)", OpenCL::CL_INVALID_VALUE);
             }
-            $arg_obj = FFI::new(self::$typeString[$dtype]."[1]");
+            $arg_obj = $ffi->new(self::$typeString[$dtype]."[1]");
             $arg_obj[0] = $arg;
             $arg_value = FFI::addr($arg_obj);
             $arg_size = FFI::sizeof($arg_obj);
