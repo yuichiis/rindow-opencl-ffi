@@ -10,7 +10,7 @@ use Rindow\OpenCL\FFI\OpenCLFactory;
 use Rindow\OpenCL\FFI\Program;
 use RuntimeException;
 
-class Test extends TestCase
+class ProgramTest extends TestCase
 {
     protected bool $skipDisplayInfo = true;
     //protected int $default_device_type = OpenCL::CL_DEVICE_TYPE_DEFAULT;

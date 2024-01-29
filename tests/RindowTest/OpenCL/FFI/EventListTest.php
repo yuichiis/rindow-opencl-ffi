@@ -7,7 +7,7 @@ use Interop\Polite\Math\Matrix\OpenCL;
 use Rindow\OpenCL\FFI\OpenCLFactory;
 use RuntimeException;
 
-class Test extends TestCase
+class EventListTest extends TestCase
 {
     protected bool $skipDisplayInfo = true;
     //protected int $default_device_type = OpenCL::CL_DEVICE_TYPE_DEFAULT;

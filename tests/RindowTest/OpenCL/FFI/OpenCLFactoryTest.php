@@ -17,7 +17,7 @@ use Rindow\OpenCL\FFI\Buffer as OpenCLBuffer;
 use Rindow\OpenCL\FFI\Kernel;
 use RuntimeException;
 
-class Test extends TestCase
+class OpenCLFactoryTest extends TestCase
 {
     static protected int $default_device_type = OpenCL::CL_DEVICE_TYPE_GPU;
 

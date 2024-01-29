@@ -8,7 +8,7 @@ use Interop\Polite\Math\Matrix\OpenCL;
 use Rindow\OpenCL\FFI\OpenCLFactory;
 use RuntimeException;
 
-class Test extends TestCase
+class PlatformListTest extends TestCase
 {
     protected bool $skipDisplayInfo = true;
 
