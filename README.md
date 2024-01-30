@@ -12,7 +12,7 @@ The version of OpenCL is limited to version 1.2(1.1 with restrictions), and we a
 
 Since our goal is to use it with the Rindow Neural Network Library, we currently only have the minimum required functionality. It will be expanded in the future.
 
-Please see the documents about Math libraries on [Rindow Mathematics](https://rindow.github.io/mathematics/) web pages.
+Please see the documents about Buffer objects on [Rindow Mathematics](https://rindow.github.io/mathematics/acceleration/opencl.html#rindow-clblast-ffi) web pages.
 
 
 Requirements
@@ -50,11 +50,15 @@ Ubuntu standard OpenCL drivers include:
 ### Setup Rindow OpenCL-FFI
 Install using composer.
 
+```shell
 $ composer require rindow/rindow-opencl-ffi
+```
 
 How to use
 ==========
 Let's run the sample program.
+
+### Sample for Display OpenCL Information
 ```php
 <?php
 include __DIR__.'/vendor/autoload.php';
@@ -90,4 +94,93 @@ for($p=0;$p<$m;$p++) {
         echo "        CL_DEVICE_OPENCL_C_VERSION=".$devices->getInfo($i,OpenCL::CL_DEVICE_OPENCL_C_VERSION)."\n";
     }
 }
+```
+
+### Sample for Compile and Run OpenCL Program
+
+```shell
+$ composer require rindow/rindow-opencl-ffi
+$ composer require rindow/rindow-math-buffer-ffi
+```
+
+```php
+<?php
+include __DIR__.'/vendor/autoload.php';
+
+use Interop\Polite\Math\Matrix\OpenCL;
+use Interop\Polite\Math\Matrix\NDArray;
+use Rindow\OpenCL\FFI\OpenCLFactory;
+use Rindow\Math\Buffer\FFI\BufferFactory;
+
+$ocl = new OpenCLFactory();
+$hostBufferFactory = new BufferFactory();
+$NWITEMS = 64;
+
+$context = $ocl->Context(OpenCL::CL_DEVICE_TYPE_DEFAULT);
+$queue = $ocl->CommandQueue($context);
+$sources = [
+    "__kernel void saxpy(const global float * x,\n".
+    "                    __global float * y,\n".
+    "                    const float a)\n".
+    "{\n".
+    "   uint gid = get_global_id(0);\n".
+    "   y[gid] = a* x[gid] + y[gid];\n".
+    "}\n"
+];
+$program = $ocl->Program($context,$sources);
+
+try {
+    $program->build();
+} catch(\RuntimeException $e) {
+    echo $e->getMessage()."\n";
+    switch($e->getCode()) {
+        case OpenCL::CL_BUILD_PROGRAM_FAILURE: {
+            echo "CL_PROGRAM_BUILD_STATUS=".$program->getBuildInfo(OpenCL::CL_PROGRAM_BUILD_STATUS)."\n";
+            echo "CL_PROGRAM_BUILD_OPTIONS=".safestring($program->getBuildInfo(OpenCL::CL_PROGRAM_BUILD_OPTIONS))."\n";
+            echo "CL_PROGRAM_BUILD_LOG=".safestring($program->getBuildInfo(OpenCL::CL_PROGRAM_BUILD_LOG))."\n";
+            echo "CL_PROGRAM_BINARY_TYPE=".safestring($program->getBuildInfo(OpenCL::CL_PROGRAM_BINARY_TYPE))."\n";
+        }
+        case OpenCL::CL_COMPILE_PROGRAM_FAILURE: {
+            echo "CL_PROGRAM_BUILD_LOG=".safestring($program->getBuildInfo(OpenCL::CL_PROGRAM_BUILD_LOG))."\n";
+        }
+    }
+    throw $e;
+}
+$kernel = $ocl->Kernel($program,"saxpy");
+$hostX = $hostBufferFactory->Buffer(
+    $NWITEMS,NDArray::float32
+);
+$hostY = $hostBufferFactory->Buffer(
+    $NWITEMS,NDArray::float32
+);
+
+for($i=0;$i<$NWITEMS;$i++) {
+    $hostX[$i] = $i;
+    $hostY[$i] = $NWITEMS-1-$i;
+}
+$a = 2.0;
+$bufX = $ocl->Buffer($context,intval($NWITEMS*32/8),
+    OpenCL::CL_MEM_READ_ONLY|OpenCL::CL_MEM_COPY_HOST_PTR,
+    $hostX);
+$bufY = $ocl->Buffer($context,intval($NWITEMS*32/8),
+    OpenCL::CL_MEM_READ_WRITE|OpenCL::CL_MEM_COPY_HOST_PTR,
+    $hostY);
+$kernel->setArg(0,$bufX);
+$kernel->setArg(1,$bufY);
+$kernel->setArg(2,$a,NDArray::float32);
+
+// enqueueNDRange
+$global_work_size = [$NWITEMS];
+$local_work_size = [1];
+$kernel->enqueueNDRange($queue,$global_work_size,$local_work_size);
+
+// complete kernel
+$queue->finish();
+
+$bufY->read($queue,$hostY);
+
+for($i=0;$i<$NWITEMS;$i++) {
+    echo $hostY[$i].",";
+}
+echo "\n";
 ```
