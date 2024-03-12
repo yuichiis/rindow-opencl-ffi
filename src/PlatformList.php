@@ -25,13 +25,13 @@ class PlatformList implements Countable
         }
         $numPlatforms = $ffi->new("cl_uint[1]");
         $errcode_ret = $ffi->clGetPlatformIDs(0, NULL, $numPlatforms);
-        if($errcode_ret) {
+        if($errcode_ret!=OpenCL::CL_SUCCESS) {
             throw new RuntimeException("clGetPlatformIDs Error errcode=$errcode_ret");
         }
         $num = $numPlatforms[0];
         $platforms = $ffi->new("cl_platform_id[$num]");
         $errcode_ret = $ffi->clGetPlatformIDs($num, $platforms, $numPlatforms);
-        if($errcode_ret) {
+        if($errcode_ret!=OpenCL::CL_SUCCESS) {
             throw new RuntimeException("clGetPlatformIDs Error2 errcode=$errcode_ret");
         }
         $this->num = $num;
@@ -75,7 +75,7 @@ class PlatformList implements Countable
         $param_value_size_ret = $ffi->new("size_t[1]");
         $errcode_ret = $ffi->clGetPlatformInfo($id, $param_name,
                                 0, NULL, $param_value_size_ret);
-        if($errcode_ret) {
+        if($errcode_ret!=OpenCL::CL_SUCCESS) {
             throw new RuntimeException("clGetPlatformInfo Error errcode=$errcode_ret");
         }
         switch($param_name) {
@@ -89,7 +89,7 @@ class PlatformList implements Countable
                 $errcode_ret = $ffi->clGetPlatformInfo($id,
                                         $param_name,
                                         $size, $param_value_val, NULL);
-                if($errcode_ret) {
+                if($errcode_ret!=OpenCL::CL_SUCCESS) {
                     throw new RuntimeException("clGetPlatformInfo Error errcode=$errcode_ret");
                 }
                 return FFI::string($param_value_val,$size-1);

@@ -223,7 +223,7 @@ class Kernel
                 $errcode_ret = $ffi->clGetKernelInfo($this->kernel,
                         $param_name,
                         $size, $param_value_val, NULL);
-                if($errcode_ret) {
+                if($errcode_ret!=OpenCL::CL_SUCCESS) {
                     throw new RuntimeException("clGetKernelInfo Error2 errcode=$errcode_ret",$errcode_ret);
                 }
                 return $param_value_val[0];
@@ -237,7 +237,7 @@ class Kernel
                 $errcode_ret = $ffi->clGetKernelInfo($this->kernel,
                                         $param_name,
                                         $size, $param_value_val, NULL);
-                if($errcode_ret) {
+                if($errcode_ret!=OpenCL::CL_SUCCESS) {
                     throw new RuntimeException("clGetKernelInfo Error2 errcode=$errcode_ret",$errcode_ret);
                 }
                 return FFI::string($param_value_val,$size-1);
@@ -251,7 +251,7 @@ class Kernel
             //    $errcode_ret = $ffi->clGetKernelInfo($this->kernel,
             //            $param_name,
             //            $size, $param_value_val, NULL);
-            //    if($errcode_ret) {
+            //    if($errcode_ret!=OpenCL::CL_SUCCESS) {
             //        throw new RuntimeException("clGetKernelInfo Error2 errcode=$errcode_ret",$errcode_ret);
             //    }
             //    return $param_value_val[0];
@@ -265,7 +265,7 @@ class Kernel
                 $errcode_ret = $ffi->clGetKernelInfo($this->kernel,
                         $param_name,
                         $size, $param_value_val, NULL);
-                if($errcode_ret) {
+                if($errcode_ret!=OpenCL::CL_SUCCESS) {
                     throw new RuntimeException("clGetKernelInfo Error2 errcode=$errcode_ret",$errcode_ret);
                 }
                 return $param_value_val[0];

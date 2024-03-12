@@ -27,11 +27,11 @@ class Context
                 $errcode_ret
             );
             if($errcode_ret!=OpenCL::CL_SUCCESS) {
-                throw new RuntimeException("clGetContextInfo Error errcode=".$errcode_ret[0]);
+                throw new RuntimeException("clGetContextInfo Error errcode=".$errcode_ret);
             }
             $errcode_ret = $ffi->clRetainContext($context);
             if($errcode_ret!=OpenCL::CL_SUCCESS) {
-                throw new RuntimeException("clRetainContext Error errcode=".$errcode_ret[0]);
+                throw new RuntimeException("clRetainContext Error errcode=".$errcode_ret);
             }
             $this->context = $context;
             $this->num_devices = $num_devices;
@@ -200,6 +200,9 @@ class Context
                 $errcode_ret = $ffi->clGetContextInfo($this->context,
                             $param_name,
                             $size, $device_ids, NULL);
+                if($errcode_ret!=OpenCL::CL_SUCCESS) {
+                    throw new RuntimeException("clGetContextInfo Error errcode=".$errcode_ret);
+                }
                 // direct set to return_value
                 $dummy = new PlatformList($ffi,$ffi->new("cl_platform_id[1]"));
                 return new DeviceList($ffi,$dummy,devices:$device_ids);
@@ -218,6 +221,9 @@ class Context
                 $errcode_ret = $ffi->clGetContextInfo($this->context,
                             $param_name,
                             $size, $properties, NULL);
+                if($errcode_ret!=OpenCL::CL_SUCCESS) {
+                    throw new RuntimeException("clGetContextInfo Error errcode=".$errcode_ret);
+                }
                 // direct set to return_value
                 $return_value = [];
                 for($i=0; $i<$items; $i++) {
@@ -235,6 +241,9 @@ class Context
                 $errcode_ret = $ffi->clGetContextInfo($this->context,
                         $param_name,
                         $size, $uint_result, NULL);
+                if($errcode_ret!=OpenCL::CL_SUCCESS) {
+                    throw new RuntimeException("clGetContextInfo Error errcode=".$errcode_ret);
+                }
                 $result = $uint_result[0];
                 return $result;
             }

@@ -235,7 +235,7 @@ class Program
                 $errcode_ret = $ffi->clGetProgramInfo($this->program,
                                         $param_name,
                                         $size, $uint_result, NULL);
-                if($errcode_ret) {
+                if($errcode_ret!=OpenCL::CL_SUCCESS) {
                     throw new RuntimeException("clGetProgramInfo Error2 errcode=$errcode_ret");
                 }
                 return $uint_result[0];
@@ -254,7 +254,7 @@ class Program
                 $errcode_ret = $ffi->clGetProgramInfo($this->program,
                                         $param_name,
                                         $size, $size_t_result, NULL);
-                if($errcode_ret) {
+                if($errcode_ret!=OpenCL::CL_SUCCESS) {
                     throw new RuntimeException("clGetProgramInfo Error2 errcode=$errcode_ret");
                 }
                 return $size_t_result[0];
@@ -269,6 +269,9 @@ class Program
                 $errcode_ret = $ffi->clGetProgramInfo($this->program,
                                     $param_name,
                                     $size, $param_value, NULL);
+                if($errcode_ret!=OpenCL::CL_SUCCESS) {
+                    throw new RuntimeException("clGetProgramInfo Error errcode=$errcode_ret");
+                }
                 $param_value_val = FFI::string($param_value,$size-1);
                 return $param_value_val;
             }
@@ -283,6 +286,9 @@ class Program
                 $errcode_ret = $ffi->clGetProgramInfo($this->program,
                             $param_name,
                             $size, $device_ids, NULL);
+                if($errcode_ret!=OpenCL::CL_SUCCESS) {
+                    throw new RuntimeException("clGetProgramInfo Error errcode=$errcode_ret");
+                }
                 // direct set to return_value
                 $dummy = new PlatformList($ffi,$ffi->new("cl_platform_id[1]"));
                 return new DeviceList($ffi,$dummy,devices:$device_ids);
@@ -301,8 +307,8 @@ class Program
                 $errcode_ret = $ffi->clGetProgramInfo($this->program,
                                         $param_name,
                                         $size, $param_value_val, NULL);
-                if($errcode_ret) {
-                    throw new RuntimeException("clGetProgramInfo Error2 errcode=$errcode_ret");
+                if($errcode_ret!=OpenCL::CL_SUCCESS) {
+                    throw new RuntimeException("clGetProgramInfo Error errcode=$errcode_ret");
                 }
                 $results = [];
                 for($i=0; $i<$items; $i++) {
@@ -357,7 +363,7 @@ class Program
                                         $device,
                                         $param_name,
                                         $size, $param_value_val, NULL);
-                if($errcode_ret) {
+                if($errcode_ret!=OpenCL::CL_SUCCESS) {
                     throw new RuntimeException("clGetProgramBuildInfo Error2 errcode=$errcode_ret");
                 }
                 return $param_value_val[0];
@@ -373,7 +379,7 @@ class Program
                                         $device,
                                         $param_name,
                                         $size, $param_value_val, NULL);
-                if($errcode_ret) {
+                if($errcode_ret!=OpenCL::CL_SUCCESS) {
                     throw new RuntimeException("clGetProgramBuildInfo Error2 errcode=$errcode_ret");
                 }
                 return $param_value_val[0];
@@ -387,7 +393,7 @@ class Program
                                         $device,
                                         $param_name,
                                         $size, $param_value_val, NULL);
-                if($errcode_ret) {
+                if($errcode_ret!=OpenCL::CL_SUCCESS) {
                     throw new RuntimeException("clGetProgramBuildInfo Error2 errcode=$errcode_ret");
                 }
                 return FFI::string($param_value_val,$size-1);

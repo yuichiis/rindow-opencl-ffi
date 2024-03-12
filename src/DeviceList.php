@@ -45,7 +45,7 @@ class DeviceList implements Countable
                                 0,
                                 NULL,
                                 $numDevices);
-        if($errcode_ret) {
+        if($errcode_ret!=OpenCL::CL_SUCCESS) {
             throw new RuntimeException("clGetDeviceIDs Error errcode=$errcode_ret");
         }
         $num = $numDevices[0];
@@ -56,7 +56,7 @@ class DeviceList implements Countable
                                 $num,
                                 $devices,
                                 $numDevices);
-        if($errcode_ret) {
+        if($errcode_ret!=OpenCL::CL_SUCCESS) {
             throw new RuntimeException("clGetDeviceIDs Error2 errcode=$errcode_ret");
         }
         $this->num = $num;
@@ -118,7 +118,7 @@ class DeviceList implements Countable
                                 NULL,
                                 $param_value_size_ret);
                 
-        if($errcode_ret) {
+        if($errcode_ret!=OpenCL::CL_SUCCESS) {
             throw new RuntimeException("clGetDeviceInfo Error errcode=$errcode_ret");
         }
         switch($param_name) {
@@ -135,7 +135,7 @@ class DeviceList implements Countable
                 $errcode_ret = $ffi->clGetDeviceInfo($id,
                                         $param_name,
                                         $size, $param_value_val, NULL);
-                if($errcode_ret) {
+                if($errcode_ret!=OpenCL::CL_SUCCESS) {
                     throw new RuntimeException("clGetDeviceInfo Error2 errcode=$errcode_ret");
                 }
                 return FFI::string($param_value_val,$size-1);
@@ -178,7 +178,7 @@ class DeviceList implements Countable
                 $errcode_ret = $ffi->clGetDeviceInfo($id,
                                         $param_name,
                                         $size, $param_value_val, NULL);
-                if($errcode_ret) {
+                if($errcode_ret!=OpenCL::CL_SUCCESS) {
                     throw new RuntimeException("clGetDeviceInfo Error2 errcode=$errcode_ret");
                 }
                 return $param_value_val[0];
@@ -196,7 +196,7 @@ class DeviceList implements Countable
                 $errcode_ret = $ffi->clGetDeviceInfo($id,
                                         $param_name,
                                         $size, $param_value_val, NULL);
-                if($errcode_ret) {
+                if($errcode_ret!=OpenCL::CL_SUCCESS) {
                     throw new RuntimeException("clGetDeviceInfo Error2 errcode=$errcode_ret");
                 }
                 return $param_value_val[0];
@@ -217,7 +217,7 @@ class DeviceList implements Countable
                 $errcode_ret = $ffi->clGetDeviceInfo($id,
                                         $param_name,
                                         $size, $param_value_val, NULL);
-                if($errcode_ret) {
+                if($errcode_ret!=OpenCL::CL_SUCCESS) {
                     throw new RuntimeException("clGetDeviceInfo Error2 errcode=$errcode_ret");
                 }
                 return $param_value_val[0];
@@ -241,7 +241,7 @@ class DeviceList implements Countable
                 $errcode_ret = $ffi->clGetDeviceInfo($id,
                                         $param_name,
                                         $size, $param_value_val, NULL);
-                if($errcode_ret) {
+                if($errcode_ret!=OpenCL::CL_SUCCESS) {
                     throw new RuntimeException("clGetDeviceInfo Error2 errcode=$errcode_ret");
                 }
                 return $param_value_val[0];
@@ -259,7 +259,7 @@ class DeviceList implements Countable
                 $errcode_ret = $ffi->clGetDeviceInfo($id,
                                         $param_name,
                                         $size, $param_value_val, NULL);
-                if($errcode_ret) {
+                if($errcode_ret!=OpenCL::CL_SUCCESS) {
                     throw new RuntimeException("clGetDeviceInfo Error2 errcode=$errcode_ret");
                 }
                 return $param_value_val[0];
@@ -273,7 +273,7 @@ class DeviceList implements Countable
                 $errcode_ret = $ffi->clGetDeviceInfo($id,
                                         $param_name,
                                         $size, $param_value_val, NULL);
-                if($errcode_ret) {
+                if($errcode_ret!=OpenCL::CL_SUCCESS) {
                     throw new RuntimeException("clGetDeviceInfo Error2 errcode=$errcode_ret");
                 }
                 return new PlatformList($this->ffi, $param_value_val);
@@ -287,7 +287,7 @@ class DeviceList implements Countable
                 $errcode_ret = $ffi->clGetDeviceInfo($id,
                                         $param_name,
                                         $size, $param_value_val, NULL);
-                if($errcode_ret) {
+                if($errcode_ret!=OpenCL::CL_SUCCESS) {
                     throw new RuntimeException("clGetDeviceInfo Error2 errcode=$errcode_ret");
                 }
                 if($param_value_val[0]===NULL) {
@@ -311,7 +311,7 @@ class DeviceList implements Countable
                 $errcode_ret = $ffi->clGetDeviceInfo($id,
                                         $param_name,
                                         $size, $param_value_val, NULL);
-                if($errcode_ret) {
+                if($errcode_ret!=OpenCL::CL_SUCCESS) {
                     throw new RuntimeException("clGetDeviceInfo Error2 errcode=$errcode_ret");
                 }
                 $results = [];
@@ -335,7 +335,7 @@ class DeviceList implements Countable
                 $errcode_ret = $ffi->clGetDeviceInfo($id,
                                         $param_name,
                                         $size, $param_value_val, NULL);
-                if($errcode_ret) {
+                if($errcode_ret!=OpenCL::CL_SUCCESS) {
                     throw new RuntimeException("clGetDeviceInfo Error2 errcode=$errcode_ret");
                 }
                 $results = [];

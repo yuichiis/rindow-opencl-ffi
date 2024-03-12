@@ -32,6 +32,10 @@ class Buffer implements DeviceBuffer
         NDArray::float16 => 2,
         NDArray::float32 => 4,
         NDArray::float64 => 8,
+        NDArray::complex16 => 2,
+        NDArray::complex32 => 4,
+        NDArray::complex64 => 8,
+        NDArray::complex128=> 16,
     ];
 
     protected FFI $ffi;
