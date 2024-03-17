@@ -23,6 +23,9 @@ class OpenCLFactory
         if(self::$ffi!==null) {
             return;
         }
+        if(!extension_loaded('ffi')) {
+            return;
+        }
         $headerFile = $headerFile ?? __DIR__ . "/opencl.h";
         if($libFiles==null) {
             if(PHP_OS=='Linux') {
