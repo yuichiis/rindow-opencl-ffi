@@ -16,6 +16,7 @@ use Rindow\OpenCL\FFI\OpenCLFactory;
 $ocl = new OpenCLFactory();
 $platforms = $ocl->PlatformList();
 $m = $platforms->count();
+echo "Number of platforms($m)\n";
 for($p=0;$p<$m;$p++) {
     echo "Platform(".$p.")\n";
     echo "    CL_PLATFORM_NAME=".$platforms->getInfo($p,OpenCL::CL_PLATFORM_NAME)."\n";
@@ -25,6 +26,7 @@ for($p=0;$p<$m;$p++) {
     echo "    CL_PLATFORM_EXTENSIONS=".$platforms->getInfo($p,OpenCL::CL_PLATFORM_EXTENSIONS)."\n";
     $devices = $ocl->DeviceList($platforms,index:$p);
     $n = $devices->count();
+    echo "    Number of devices($n)\n";
     for($i=0;$i<$n;$i++) {
         echo "    device(".$i.")\n";
         echo "        CL_DEVICE_VENDOR_ID=".$devices->getInfo($i,OpenCL::CL_DEVICE_VENDOR_ID)."\n";
@@ -149,16 +151,16 @@ for($p=0;$p<$m;$p++) {
             }
         }
         echo ")\n";
-        echo "        CL_DEVICE_PLATFORM=(\n";
-        $device_platform = $devices->getInfo($i,OpenCL::CL_DEVICE_PLATFORM);
-            echo "            Platforms(".$device_platform->count().")\n";
-            for($j=0;$j<$device_platform->count();$j++) {
-            echo "                CL_PLATFORM_NAME=".$device_platform->getInfo($j,OpenCL::CL_PLATFORM_NAME)."\n";
-            echo "                CL_PLATFORM_PROFILE=".$platforms->getInfo($j,OpenCL::CL_PLATFORM_PROFILE)."\n";
-            echo "                CL_PLATFORM_VERSION=".$platforms->getInfo($j,OpenCL::CL_PLATFORM_VERSION)."\n";
-            echo "                CL_PLATFORM_VENDOR=".$platforms->getInfo($j,OpenCL::CL_PLATFORM_VENDOR)."\n";
-            echo "                CL_PLATFORM_EXTENSIONS=".$platforms->getInfo($j,OpenCL::CL_PLATFORM_EXTENSIONS)."\n";
-            }
-        echo "    )\n";
+        //echo "        CL_DEVICE_PLATFORM=(\n";
+        //$device_platform = $devices->getInfo($i,OpenCL::CL_DEVICE_PLATFORM);
+        //    echo "            platforms(".$device_platform->count().")\n";
+        //    for($j=0;$j<$device_platform->count();$j++) {
+        //    echo "                CL_PLATFORM_NAME=".$device_platform->getInfo($j,OpenCL::CL_PLATFORM_NAME)."\n";
+        //    echo "                CL_PLATFORM_PROFILE=".$platforms->getInfo($j,OpenCL::CL_PLATFORM_PROFILE)."\n";
+        //    echo "                CL_PLATFORM_VERSION=".$platforms->getInfo($j,OpenCL::CL_PLATFORM_VERSION)."\n";
+        //    echo "                CL_PLATFORM_VENDOR=".$platforms->getInfo($j,OpenCL::CL_PLATFORM_VENDOR)."\n";
+        //    echo "                CL_PLATFORM_EXTENSIONS=".$platforms->getInfo($j,OpenCL::CL_PLATFORM_EXTENSIONS)."\n";
+        //    }
+        //echo "    )\n";
     }
 }
