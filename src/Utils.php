@@ -7,6 +7,10 @@ use FFI;
 
 trait Utils
 {
+    protected int $CONSTRAINT_NONE = 0;
+    protected int $CONSTRAINT_GREATER_OR_EQUAL_ZERO = 1;
+    protected int $CONSTRAINT_GREATER_ZERO = 2;
+
     protected function array_to_integers(
         array $array, 
         int &$size, 
@@ -33,13 +37,13 @@ trait Utils
                 throw new InvalidArgumentException("the array must be array of integer.", OpenCL::CL_INVALID_VALUE);
             }
             if($i<$num_integers) {
-                if($constraint==self::CONSTRAINT_GREATER_ZERO && $val<1) {
+                if($constraint==$this->CONSTRAINT_GREATER_ZERO && $val<1) {
                     if($no_throw) {
                         $errcode_ret = -3;
                         return $integers;
                     }
                     throw new InvalidArgumentException("values must be greater zero.", OpenCL::CL_INVALID_VALUE);
-                } elseif($constraint==self::CONSTRAINT_GREATER_OR_EQUAL_ZERO && $val<0) {
+                } elseif($constraint==$this->CONSTRAINT_GREATER_OR_EQUAL_ZERO && $val<0) {
                     if($no_throw) {
                         $errcode_ret = -3;
                         return $integers;
@@ -70,7 +74,7 @@ trait Utils
             if(!is_string($val)) {
                 throw new InvalidArgumentException("the array must be array of string.", OpenCL::CL_INVALID_VALUE);
             }
-            if($mode==self::TYPE_SOURCE_CODE) {
+            if($mode==Program::TYPE_SOURCE_CODE) {
                 $val = $val."\0";
             }
             $len = strlen($val);
@@ -92,6 +96,7 @@ trait Utils
         $ffi = $this->ffi;
         $num_programs = count($array_val);
         $programs = $ffi->new("cl_program[$num_programs]");
+        $index_names = null;
         if($with_names) {
             $index_names = $ffi->new("char*[$num_programs]");
         }

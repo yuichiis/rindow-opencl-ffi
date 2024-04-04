@@ -16,10 +16,10 @@ class Program
     const TYPE_COMPILED_PROGRAM = 3;
 
     protected FFI $ffi;
-    protected object $context;
+    protected ?object $context;
     //protected int $num_devices;
     //protected object $devices;
-    protected object $program;
+    protected ?object $program;
 
     public function __construct(FFI $ffi,
         Context $context,
@@ -131,6 +131,7 @@ class Program
     {
         if($this->program) {
             $errcode_ret = $this->ffi->clReleaseProgram($this->program);
+            $this->program = null;
             if($errcode_ret!=OpenCL::CL_SUCCESS) {
                 echo "WARNING: clReleaseProgram error=$errcode_ret\n";
             }
@@ -190,7 +191,7 @@ class Program
         $devices = null;
         $num_devices = 0;
         if($device_list) {
-            $devices = $device_list_obj->_getIds();
+            $devices = $device_list->_getIds();
             $num_devices = count($devices);
         }
         $errcode_ret = $ffi->clCompileProgram(

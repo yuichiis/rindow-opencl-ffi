@@ -9,7 +9,7 @@ use FFI;
 class Context
 {
     protected FFI $ffi;
-    protected object $context;
+    protected ?object $context;
     protected int $num_devices;
     protected object $devices;
 
@@ -116,6 +116,7 @@ class Context
     {
         if($this->context) {
             $errcode_ret = $this->ffi->clReleaseContext($this->context);
+            $this->context = null;
             if($errcode_ret!=OpenCL::CL_SUCCESS) {
                 echo "WARNING: clReleaseContext error=$errcode_ret\n";
             }
