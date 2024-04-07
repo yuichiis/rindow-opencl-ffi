@@ -14,6 +14,7 @@ class Buffer implements DeviceBuffer
 {
     use Utils;
     
+    /** @var array<int,int> $valueSize */
     protected static $valueSize = [
         NDArray::bool    => 1,
         NDArray::int8    => 1,
@@ -183,6 +184,11 @@ class Buffer implements DeviceBuffer
         }
     }
 
+    /**
+     * @param array<int> $region
+     * @param array<int> $buffer_offset
+     * @param array<int> $host_offset
+     */
     public function readRect(
         CommandQueue $command_queue,
         HostBuffer $host_buffer,      
@@ -197,7 +203,7 @@ class Buffer implements DeviceBuffer
         bool $blocking_read=NULL,
         EventList $events=NULL,
         EventList $wait_events=NULL,
-    )
+    ) : void
     {
         $host_buffer_offset = $host_buffer_offset ?? 0;
         $buffer_row_pitch = $buffer_row_pitch ?? 0;
@@ -401,6 +407,11 @@ class Buffer implements DeviceBuffer
         }
     }
 
+    /**
+     * @param array<int> $region
+     * @param array<int> $buffer_offset
+     * @param array<int> $host_offset
+     */
     public function writeRect(
         CommandQueue $command_queue,
         HostBuffer $host_buffer,
@@ -415,7 +426,7 @@ class Buffer implements DeviceBuffer
         bool $blocking_write=null,
         EventList $events=null,
         EventList $wait_events=null,
-    )
+    ) : void
     {
         $host_buffer_offset = $host_buffer_offset ?? 0;
         $buffer_row_pitch = $buffer_row_pitch ?? 0;
@@ -567,7 +578,7 @@ class Buffer implements DeviceBuffer
         int $pattern_offset=null,
         EventList $events=null,
         EventList $wait_events=null,
-    )
+    ) : void
     {
         $size = $size ?? 0;
         $offset = $offset ?? 0;
@@ -645,7 +656,7 @@ class Buffer implements DeviceBuffer
         int $dst_offset=null,
         EventList $events=null,
         EventList $wait_events=null,
-    )
+    ) : void
     {
         $size = $size ?? 0;
         $src_offset = $src_offset ?? 0;
@@ -692,6 +703,11 @@ class Buffer implements DeviceBuffer
         }
     }
 
+    /**
+     * @param array<int> $region
+     * @param array<int> $src_origin
+     * @param array<int> $dst_origin
+     */
     public function copyRect(
         CommandQueue $command_queue,
         Buffer $src_buffer,
@@ -704,7 +720,7 @@ class Buffer implements DeviceBuffer
         int $dst_slice_pitch=null,
         EventList $events=null,
         EventList $wait_events=null,
-    )
+    ) : void
     {
         $src_row_pitch = $src_row_pitch ?? 0;
         $src_slice_pitch = $src_slice_pitch ?? 0;
@@ -842,7 +858,7 @@ class Buffer implements DeviceBuffer
 
     public function getInfo(
         int $param_name,
-        )
+        ) : mixed
     {
         $ffi = $this->ffi;
         $id = $this->buffer;

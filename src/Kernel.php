@@ -11,6 +11,7 @@ class Kernel
 {
     use Utils;
 
+    /** @var array<int,string> $typeString */
     protected static $typeString = [
         NDArray::bool    => 'uint8_t',
         NDArray::int8    => 'int8_t',
@@ -68,7 +69,7 @@ class Kernel
         int $arg_index,
         mixed $arg,    // long | double | opencl_buffer_ce | command_queue_ce
         int $dtype=null,
-    )
+    ) : void
     {
         $ffi = $this->ffi;
         $dtype = $dtype ?? 0;
@@ -108,6 +109,11 @@ class Kernel
         }
     }
 
+    /**
+     * @param array<int> $global_work_size
+     * @param array<int> $local_work_size
+     * @param array<int> $global_work_offset
+     */
     public function enqueueNDRange(
         CommandQueue $command_queue,
         array $global_work_size,
@@ -115,7 +121,7 @@ class Kernel
         array $global_work_offset=null,
         EventList $events=null,
         EventList $wait_events=null,
-    )
+    ) : void
     {
         $ffi = $this->ffi;
         $errcode_ret = 0;
@@ -197,7 +203,7 @@ class Kernel
     
     public function getInfo(
         int $param_name,
-        )
+        ) : mixed
     {
         $ffi = $this->ffi;
     
@@ -276,7 +282,7 @@ class Kernel
     public function getWorkGroupInfo(
         int $param_name,
         DeviceList $device_list=null,
-    )
+    ) : mixed
     {
         $ffi = $this->ffi;
     

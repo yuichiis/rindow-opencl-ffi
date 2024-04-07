@@ -83,7 +83,7 @@ class CommandQueue
         }
     }
 
-    public function getInfo(int $param_name)
+    public function getInfo(int $param_name) : mixed
     {
         $ffi = $this->ffi;
 

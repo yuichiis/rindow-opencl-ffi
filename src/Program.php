@@ -21,6 +21,9 @@ class Program
     //protected object $devices;
     protected ?object $program;
 
+    /**
+     * @param string|array<string>|array<string,object> $source
+     */
     public function __construct(FFI $ffi,
         Context $context,
         string|array $source,   // string or list of something
@@ -175,6 +178,9 @@ class Program
     }
 
 #ifdef CL_VERSION_1_2
+    /**
+     * @param array<string,object> $headers
+     */
     public function compile(
         array $headers=null,        // ArrayHash<Program> Key:file path Value:program
         string $options=null,       // string

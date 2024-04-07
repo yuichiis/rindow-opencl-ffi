@@ -11,6 +11,10 @@ trait Utils
     protected int $CONSTRAINT_GREATER_OR_EQUAL_ZERO = 1;
     protected int $CONSTRAINT_GREATER_ZERO = 2;
 
+    /**
+     * @param array<int> $array
+     * @return object
+     */
     protected function array_to_integers(
         array $array, 
         int &$size, 
@@ -59,6 +63,10 @@ trait Utils
         return $integers;
     }
 
+    /**
+     * @param array<string> $array_val
+     * @return array{int,object,object,array<object>}
+     */
     protected function array_to_strings(
         array $array_val,
         int $mode,
@@ -88,6 +96,10 @@ trait Utils
         return [$num_strings,$strings,$lengths,$objs];
     }
     
+    /**
+     * @param array<string,object> $array_val
+     * @return array<mixed>
+     */
     protected function array_to_programs(
         array $array_val,
         bool $with_names=null,
