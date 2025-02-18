@@ -30,6 +30,8 @@ class Kernel
 
     protected FFI $ffi;
     protected ?object $kernel;
+    protected int $addressBits;
+    protected int $sizeOfDeviceAddress;
 
     public function __construct(FFI $ffi,
         Program $program,
@@ -52,6 +54,9 @@ class Kernel
             throw new RuntimeException("clCreateKernel Error errcode=".$errcode_ret[0], $errcode_ret[0]);
         }
         $this->kernel = $kernel;
+        $deviceList = $program->getInfo(OpenCL::CL_PROGRAM_DEVICES);
+        $this->addressBits = $deviceList->getInfo(0,OpenCL::CL_DEVICE_ADDRESS_BITS);
+        $this->sizeOfDeviceAddress = intdiv($this->addressBits,8);
     }
 
     public function __destruct()
@@ -72,7 +77,6 @@ class Kernel
     ) : void
     {
         $ffi = $this->ffi;
-        $dtype = $dtype ?? 0;
     
         if(is_object($arg)) {
             if($arg instanceof Buffer) {
@@ -85,6 +89,9 @@ class Kernel
                 throw new InvalidArgumentException("Unsupported argument type", OpenCL::CL_INVALID_VALUE);
             }
         } elseif(is_numeric($arg)) {
+            if($dtype===null) {
+                throw new InvalidArgumentException("Must set data type for constant value:($dtype)", OpenCL::CL_INVALID_VALUE);
+            }
             if(!isset(self::$typeString[$dtype])) {
                 throw new InvalidArgumentException("Unsuppored binding data type for integer or float:($dtype)", OpenCL::CL_INVALID_VALUE);
             }
@@ -92,8 +99,11 @@ class Kernel
             $arg_obj[0] = $arg;
             $arg_value = FFI::addr($arg_obj);
             $arg_size = FFI::sizeof($arg_obj);
-        } else if($arg===NULL) {
-            $arg_value = NULL;
+        } else if($arg===null) { // OpenCL local_buffer or null pointer
+            if($dtype===null) {// for null pointer
+                $dtype = $this->sizeOfDeviceAddress;
+            }
+            $arg_value = null;
             $arg_size = $dtype;
         } else {
             throw new InvalidArgumentException("Invalid argument type", OpenCL::CL_INVALID_VALUE);
