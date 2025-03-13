@@ -73,7 +73,7 @@ class Kernel
     public function setArg(
         int $arg_index,
         mixed $arg,    // long | double | opencl_buffer_ce | command_queue_ce
-        int $dtype=null,
+        ?int $dtype=null,
     ) : void
     {
         $ffi = $this->ffi;
@@ -127,10 +127,10 @@ class Kernel
     public function enqueueNDRange(
         CommandQueue $command_queue,
         array $global_work_size,
-        array $local_work_size=null,
-        array $global_work_offset=null,
-        EventList $events=null,
-        EventList $wait_events=null,
+        ?array $local_work_size=null,
+        ?array $global_work_offset=null,
+        ?EventList $events=null,
+        ?EventList $wait_events=null,
     ) : void
     {
         $ffi = $this->ffi;
@@ -291,7 +291,7 @@ class Kernel
     
     public function getWorkGroupInfo(
         int $param_name,
-        DeviceList $device_list=null,
+        ?DeviceList $device_list=null,
     ) : mixed
     {
         $ffi = $this->ffi;
