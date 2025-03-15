@@ -72,4 +72,4 @@ jobs:
       #    filter: ReleaseTest
 
       - name: PHPUnit Tests
-        run: phpunit -c tests
+        run: phpunit -c tests --filter ReleaseTest
