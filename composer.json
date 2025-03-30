@@ -17,5 +17,5 @@
             "Rindow\\OpenCL\\FFI\\": "src/"
         }
     },
-    "bin": [ "bin/clinfo.bat" ]
+    "bin": [ "bin/clinfo" ]
 }
