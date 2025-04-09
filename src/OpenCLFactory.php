@@ -24,8 +24,8 @@ class OpenCLFactory
     protected array $libs_win = ['OpenCL.dll'];
     /** @var array<string> $libs_linux */
     protected array $libs_linux = ['libOpenCL.so.1'];
-    /** @var array<string> $libs_macos */
-    protected array $libs_macos = ['/System/Library/Frameworks/OpenCL.framework/OpenCL'];
+    /** @var array<string> $libs_mac */
+    protected array $libs_mac = ['/System/Library/Frameworks/OpenCL.framework/OpenCL'];
 
     /**
      * @param array<string> $libFiles
@@ -48,7 +48,7 @@ class OpenCLFactory
             } elseif(PHP_OS=='WINNT') {
                 $libFiles = $this->libs_win;
             } elseif(PHP_OS=='Darwin') {
-                $libFiles = $this->libs_macos;
+                $libFiles = $this->libs_mac;
             } else {
                 throw new RuntimeException('Unknown operating system: "'.PHP_OS.'"');
             }
@@ -81,6 +81,7 @@ class OpenCLFactory
                 continue;
             }
             self::$ffi = $ffi;
+            self::$status = self::STAUTS_OK;
             break;
         }
     }
