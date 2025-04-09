@@ -16,6 +16,8 @@ class OpenCLFactory
     protected array $libs_win = ['OpenCL.dll'];
     /** @var array<string> $libs_linux */
     protected array $libs_linux = ['libOpenCL.so.1'];
+    /** @var array<string> $libs_macos */
+    protected array $libs_macos = ['/System/Library/Frameworks/OpenCL.framework/OpenCL'];
     protected ?string $statusMessage = null;
 
     /**
@@ -38,6 +40,8 @@ class OpenCLFactory
                 $libFiles = $this->libs_linux;
             } elseif(PHP_OS=='WINNT') {
                 $libFiles = $this->libs_win;
+            } elseif(PHP_OS=='Darwin') {
+                $libFiles = $this->libs_macos;
             } else {
                 throw new RuntimeException('Unknown operating system: "'.PHP_OS.'"');
             }
@@ -75,12 +79,6 @@ class OpenCLFactory
     public function isAvailable() : bool
     {
         return self::$ffi!==null;
-        //$isAvailable = FFIEnvRuntime::isAvailable();
-        //if(!$isAvailable) {
-        //    return false;
-        //}
-        //$pathname = FFIEnvLocator::resolve(...$this->libs);
-        //return $pathname!==null;
     }
 
     public function PlatformList() : PlatformList
