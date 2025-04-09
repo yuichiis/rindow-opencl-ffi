@@ -103,7 +103,7 @@ class OpenCLFactory
     public function PlatformList() : PlatformList
     {
         if(self::$ffi==null) {
-            throw new RuntimeException($this->statusMessage);
+            throw new RuntimeException($this->getStatusMessage());
         }
         return new PlatformList(self::$ffi);
     }
@@ -115,7 +115,7 @@ class OpenCLFactory
     ) : DeviceList
     {
         if(self::$ffi==null) {
-            throw new RuntimeException($this->statusMessage);
+            throw new RuntimeException($this->getStatusMessage());
         }
         return new DeviceList(self::$ffi,$platforms,$index,$deviceType);
     }
@@ -125,7 +125,7 @@ class OpenCLFactory
     ) : Context
     {
         if(self::$ffi==null) {
-            throw new RuntimeException($this->statusMessage);
+            throw new RuntimeException($this->getStatusMessage());
         }
         return new Context(self::$ffi,$arg);
     }
@@ -135,7 +135,7 @@ class OpenCLFactory
     ) : EventList
     {
         if(self::$ffi==null) {
-            throw new RuntimeException($this->statusMessage);
+            throw new RuntimeException($this->getStatusMessage());
         }
         return new EventList(self::$ffi, $context);
     }
@@ -147,7 +147,7 @@ class OpenCLFactory
     ) : CommandQueue
     {
         if(self::$ffi==null) {
-            throw new RuntimeException($this->statusMessage);
+            throw new RuntimeException($this->getStatusMessage());
         }
         return new CommandQueue(self::$ffi, $context, $deviceId, $properties);
     }
@@ -164,7 +164,7 @@ class OpenCLFactory
         ) : Program
     {
         if(self::$ffi==null) {
-            throw new RuntimeException($this->statusMessage);
+            throw new RuntimeException($this->getStatusMessage());
         }
         return new Program(self::$ffi, $context, $source, $mode, $deviceList, $options);
     }
@@ -179,7 +179,7 @@ class OpenCLFactory
         ) : Buffer
     {
         if(self::$ffi==null) {
-            throw new RuntimeException($this->statusMessage);
+            throw new RuntimeException($this->getStatusMessage());
         }
         return new Buffer(self::$ffi, $context, $size, $flags, $hostBuffer, $hostOffset, $dtype);
     }
@@ -191,7 +191,7 @@ class OpenCLFactory
         ) : Kernel
     {
         if(self::$ffi==null) {
-            throw new RuntimeException($this->statusMessage);
+            throw new RuntimeException($this->getStatusMessage());
         }
         return new Kernel(self::$ffi, $program, $kernelName);
     }
