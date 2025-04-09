@@ -65,10 +65,17 @@ class OpenCLFactory
                 }
                 continue;
             }
+            $platforms = null;
             try {
-                $dmy = new PlatformList($ffi);
+                $platforms = new PlatformList($ffi);
             } catch(RuntimeException $e) {
                 $this->statusMessage = 'OpenCL configuration is not complete.';
+                continue;
+            }
+            try {
+                $dmy = new DeviceList($ffi,$platforms);
+            } catch(RuntimeException $e) {
+                $this->statusMessage = 'OpenCL device is not found.';
                 continue;
             }
             self::$ffi = $ffi;
