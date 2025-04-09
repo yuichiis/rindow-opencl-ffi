@@ -81,6 +81,7 @@ class OpenCLFactory
                 continue;
             }
             self::$ffi = $ffi;
+            self::$status = self::STAUTS_OK;
             break;
         }
     }
