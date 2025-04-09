@@ -11,6 +11,11 @@ use RuntimeException;
 
 class OpenCLFactory
 {
+    const STAUTS_OK = 0;
+    const STAUTS_LIBRARY_NOT_LOADED = -1;
+    const STATUS_CONFIGURATION_NOT_COMPLETE = -2;
+    const STATUS_DEVICE_NOT_FOUND = -3;
+    
     private static ?FFI $ffi = null;
     /** @var array<string> $libs_win */
     protected array $libs_win = ['OpenCL.dll'];
@@ -19,6 +24,7 @@ class OpenCLFactory
     /** @var array<string> $libs_macos */
     protected array $libs_macos = ['/System/Library/Frameworks/OpenCL.framework/OpenCL'];
     protected ?string $statusMessage = null;
+    protected int $status = 0;
 
     /**
      * @param array<string> $libFiles
@@ -46,21 +52,12 @@ class OpenCLFactory
                 throw new RuntimeException('Unknown operating system: "'.PHP_OS.'"');
             }
         }
-        //$ffi = FFI::load($headerFile);
         $code = file_get_contents($headerFile);
-        // ***************************************************************
-        // FFI Locator is incompletely implemented. It is often not found.
-        // ***************************************************************
-        //$pathname = FFIEnvLocator::resolve(...$libFiles);
-        //if($pathname) {
-        //    $ffi = FFI::cdef($code,$pathname);
-        //    self::$ffi = $ffi;
-        //}
         foreach ($libFiles as $filename) {
             try {
                 $ffi = FFI::cdef($code,$filename);
             } catch(FFIException $e) {
-                if($this->statusMessage===null) {
+                if($this->status>self::STAUTS_LIBRARY_NOT_LOADED) {
                     $this->statusMessage = 'OpenCL library not loaded.';
                 }
                 continue;
@@ -69,18 +66,32 @@ class OpenCLFactory
             try {
                 $platforms = new PlatformList($ffi);
             } catch(RuntimeException $e) {
-                $this->statusMessage = 'OpenCL configuration is not complete.';
+                if($this->status>self::STATUS_CONFIGURATION_NOT_COMPLETE) {
+                    $this->statusMessage = 'OpenCL configuration is not complete.';
+                }
                 continue;
             }
             try {
                 $dmy = new DeviceList($ffi,$platforms);
             } catch(RuntimeException $e) {
-                $this->statusMessage = 'OpenCL device is not found.';
+                if($this->status>self::STATUS_DEVICE_NOT_FOUND) {
+                    $this->statusMessage = 'OpenCL device is not found.';
+                }
                 continue;
             }
             self::$ffi = $ffi;
             break;
         }
+    }
+
+    public function getStatus() : int
+    {
+        return $this->status;
+    }
+
+    public function getStatusMessage() : ?string
+    {
+        return $this->statusMessage;
     }
 
     public function isAvailable() : bool
