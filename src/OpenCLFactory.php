@@ -56,14 +56,13 @@ class OpenCLFactory
             try {
                 $ffi = FFI::cdef($code,$filename);
             } catch(FFIException $e) {
-                if($statusMessage===null) {
+                if($this->statusMessage===null) {
                     $this->statusMessage = 'OpenCL library not loaded.';
                 }
                 continue;
             }
             try {
                 $dmy = new PlatformList($ffi);
-                
             } catch(RuntimeException $e) {
                 $this->statusMessage = 'OpenCL configuration is not complete.';
                 continue;
