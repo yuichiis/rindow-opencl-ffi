@@ -41,7 +41,7 @@ class DeviceList implements Countable
         $numDevices = $ffi->new("unsigned int[1]");
         $errcode_ret = $ffi->clGetDeviceIDs(
                                 $platforms[0],
-                                $device_type,
+                                OpenCL::CL_DEVICE_TYPE_ALL, // $device_type,
                                 0,
                                 NULL,
                                 $numDevices);
