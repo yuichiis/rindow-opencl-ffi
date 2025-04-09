@@ -57,6 +57,11 @@ class OpenCLFactory
             } catch(FFIException $e) {
                 continue;
             }
+            try {
+                $dmy = new PlatformList($ffi);
+            } catch(RuntimeException $e) {
+                continue;
+            }
             self::$ffi = $ffi;
             break;
         }
