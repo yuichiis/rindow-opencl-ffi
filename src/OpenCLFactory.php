@@ -17,14 +17,15 @@ class OpenCLFactory
     const STATUS_DEVICE_NOT_FOUND = -3;
     
     private static ?FFI $ffi = null;
+    private static ?string $statusMessage = null;
+    private static int $status = 0;
+
     /** @var array<string> $libs_win */
     protected array $libs_win = ['OpenCL.dll'];
     /** @var array<string> $libs_linux */
     protected array $libs_linux = ['libOpenCL.so.1'];
     /** @var array<string> $libs_macos */
     protected array $libs_macos = ['/System/Library/Frameworks/OpenCL.framework/OpenCL'];
-    protected ?string $statusMessage = null;
-    protected int $status = 0;
 
     /**
      * @param array<string> $libFiles
@@ -57,8 +58,8 @@ class OpenCLFactory
             try {
                 $ffi = FFI::cdef($code,$filename);
             } catch(FFIException $e) {
-                if($this->status>self::STAUTS_LIBRARY_NOT_LOADED) {
-                    $this->statusMessage = 'OpenCL library not loaded.';
+                if(self::$status>self::STAUTS_LIBRARY_NOT_LOADED) {
+                    self::$statusMessage = 'OpenCL library not loaded.';
                 }
                 continue;
             }
@@ -66,16 +67,16 @@ class OpenCLFactory
             try {
                 $platforms = new PlatformList($ffi);
             } catch(RuntimeException $e) {
-                if($this->status>self::STATUS_CONFIGURATION_NOT_COMPLETE) {
-                    $this->statusMessage = 'OpenCL configuration is not complete.';
+                if(self::$status>self::STATUS_CONFIGURATION_NOT_COMPLETE) {
+                    self::$statusMessage = 'OpenCL configuration is not complete.';
                 }
                 continue;
             }
             try {
                 $dmy = new DeviceList($ffi,$platforms);
             } catch(RuntimeException $e) {
-                if($this->status>self::STATUS_DEVICE_NOT_FOUND) {
-                    $this->statusMessage = 'OpenCL device is not found.';
+                if(self::$status>self::STATUS_DEVICE_NOT_FOUND) {
+                    self::$statusMessage = 'OpenCL device is not found.';
                 }
                 continue;
             }
@@ -86,12 +87,12 @@ class OpenCLFactory
 
     public function getStatus() : int
     {
-        return $this->status;
+        return self::$status;
     }
 
     public function getStatusMessage() : string
     {
-        return $this->statusMessage??'';
+        return self::$statusMessage??'';
     }
 
     public function isAvailable() : bool
