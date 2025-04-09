@@ -89,9 +89,9 @@ class OpenCLFactory
         return $this->status;
     }
 
-    public function getStatusMessage() : ?string
+    public function getStatusMessage() : string
     {
-        return $this->statusMessage;
+        return $this->statusMessage??'';
     }
 
     public function isAvailable() : bool
