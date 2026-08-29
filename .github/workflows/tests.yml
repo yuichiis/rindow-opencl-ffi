@@ -38,7 +38,7 @@ jobs:
           php-version: ${{ matrix.php }}
           # PHP Extras
           coverage: none
-          tools: composer, phpstan:2.1
+          tools: composer, phpstan:2.1.x
           #ini-values: "memory_limit=512M"
           extensions: ffi, mbstring
         env:
