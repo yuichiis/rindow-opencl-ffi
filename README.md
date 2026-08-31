@@ -188,3 +188,4 @@ echo "\n";
 To Do
 =====
 We have never verified OpenCL functionality on macOS. As OpenCL is not the recommended approach on macOS, it's a lower priority, but we welcome assistance from anyone who can test in a macOS environment.
+
