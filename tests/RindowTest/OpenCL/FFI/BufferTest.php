@@ -71,10 +71,10 @@ class BufferTest extends TestCase
         $buffer = $ocl->Buffer($context,intval(16*32/8),
             OpenCL::CL_MEM_READ_WRITE);
         $this->assertTrue($buffer->dtype()==0);
-        $this->assertTrue($buffer->value_size()==0);
+        $this->assertTrue($buffer->valueSize()==0);
         $buffer->write($queue,$hostBuffer);
         $this->assertTrue($buffer->dtype()==NDArray::float32);
-        $this->assertTrue($buffer->value_size()==(32/8));
+        $this->assertTrue($buffer->valueSize()==(32/8));
     }
 
     /**
@@ -100,10 +100,10 @@ class BufferTest extends TestCase
             OpenCL::CL_MEM_READ_WRITE
         );
         $this->assertTrue($buffer->dtype()==0);
-        $this->assertTrue($buffer->value_size()==0);
+        $this->assertTrue($buffer->valueSize()==0);
         $buffer->write($queue,$hostBuffer);
         $this->assertTrue($buffer->dtype()==NDArray::float32);
-        $this->assertTrue($buffer->value_size()==(32/8));
+        $this->assertTrue($buffer->valueSize()==(32/8));
     }
 
     /**
@@ -146,7 +146,7 @@ class BufferTest extends TestCase
             OpenCL::CL_MEM_USE_HOST_PTR,$hostBuffer
         );
         $this->assertTrue($buffer->dtype()==NDArray::float32);
-        $this->assertTrue($buffer->value_size()==(32/8));
+        $this->assertTrue($buffer->valueSize()==(32/8));
         $newHostBuffer = $newHostBufferFactory->Buffer(16,NDArray::float32);
         $buffer->read($queue,$newHostBuffer);
         foreach(range(0,15) as $value) {
@@ -194,7 +194,7 @@ class BufferTest extends TestCase
             OpenCL::CL_MEM_READ_WRITE|OpenCL::CL_MEM_COPY_HOST_PTR,
             $hostBuffer);
         $this->assertTrue($buffer->dtype()==NDArray::float32);
-        $this->assertTrue($buffer->value_size()==(32/8));
+        $this->assertTrue($buffer->valueSize()==(32/8));
         
         $newHostBuffer = $newHostBufferFactory->Buffer(16,NDArray::float32);
         foreach(range(0,15) as $value) {
@@ -730,7 +730,7 @@ class BufferTest extends TestCase
             null,0,NDArray::float32);
     
         $this->assertTrue($buffer->dtype()==NDArray::float32);
-        $this->assertTrue($buffer->value_size()==intval(32/8));
+        $this->assertTrue($buffer->valueSize()==intval(32/8));
         
     }
 
@@ -761,13 +761,13 @@ class BufferTest extends TestCase
         }
         $buffer = $ocl->Buffer(
             $context,
-            $hostBuffer->value_size()*count($hostBuffer),
+            $hostBuffer->valueSize()*count($hostBuffer),
             OpenCL::CL_MEM_READ_WRITE|OpenCL::CL_MEM_COPY_HOST_PTR,
             $hostBuffer
         );
 
         $subHostBuffer = $newHostBufferFactory->Buffer(2*2*2,NDArray::float32);
-        $value_size = $subHostBuffer->value_size();
+        $value_size = $subHostBuffer->valueSize();
         $buffer->readRect(
             $queue,$subHostBuffer,[2*$value_size,2,2],
             $hostBufferOffset=0,
@@ -810,13 +810,13 @@ class BufferTest extends TestCase
         }
         $buffer = $ocl->Buffer(
             $context,
-            $hostBuffer->value_size()*count($hostBuffer),
+            $hostBuffer->valueSize()*count($hostBuffer),
             OpenCL::CL_MEM_READ_WRITE|OpenCL::CL_MEM_COPY_HOST_PTR,
             $hostBuffer
         );
 
         $subHostBuffer = $newHostBufferFactory->Buffer(2*2*2,NDArray::float32);
-        $value_size = $subHostBuffer->value_size();
+        $value_size = $subHostBuffer->valueSize();
         $data = [ 
             -1,-2, -3,-4,
             -5,-6, -7,-8
@@ -872,13 +872,13 @@ class BufferTest extends TestCase
         }
         $buffer = $ocl->Buffer(
             $context,
-            $hostBuffer->value_size()*count($hostBuffer),
+            $hostBuffer->valueSize()*count($hostBuffer),
             OpenCL::CL_MEM_READ_WRITE|OpenCL::CL_MEM_COPY_HOST_PTR,
             $hostBuffer
         );
 
         $subHostBuffer = $newHostBufferFactory->Buffer(2*2*2,NDArray::float32);
-        $value_size = $subHostBuffer->value_size();
+        $value_size = $subHostBuffer->valueSize();
         $data = [
             0,0, 0,0,
             0,0, 0,0
@@ -888,7 +888,7 @@ class BufferTest extends TestCase
         }
         $dstBuffer = $ocl->Buffer(
             $context,
-            $subHostBuffer->value_size()*count($subHostBuffer),
+            $subHostBuffer->valueSize()*count($subHostBuffer),
             OpenCL::CL_MEM_READ_WRITE|OpenCL::CL_MEM_COPY_HOST_PTR,
             $subHostBuffer
         );

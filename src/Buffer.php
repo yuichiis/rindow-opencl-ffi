@@ -14,8 +14,8 @@ class Buffer implements DeviceBuffer
 {
     use Utils;
     
-    /** @var array<int,int> $valueSize */
-    protected static $valueSize = [
+    /** @var array<int,int> $valueSizeTable */
+    protected static $valueSizeTable = [
         NDArray::bool    => 1,
         NDArray::int8    => 1,
         NDArray::int16   => 2,
@@ -39,7 +39,7 @@ class Buffer implements DeviceBuffer
     protected ?object $buffer;  // cl_mem
     protected int $size;       // size_t
     protected int $dtype=0;      // int
-    protected int $value_size=0; // size_t
+    protected int $valueSize=0; // size_t
     protected HostBuffer $host_buffer; // Buffer for FFI
 
     public function __construct(FFI $ffi,
@@ -57,7 +57,7 @@ class Buffer implements DeviceBuffer
 
         $host_ptr = null;
         if($host_buffer) {
-            if((($host_buffer->count() - $host_offset) * $host_buffer->value_size())<$size) {
+            if((($host_buffer->count() - $host_offset) * $host_buffer->valueSize())<$size) {
                 throw new InvalidArgumentException("Host buffer is too small.", OpenCL::CL_INVALID_VALUE);
             }
             $host_ptr = $host_buffer->addr($host_offset);
@@ -77,14 +77,14 @@ class Buffer implements DeviceBuffer
         $this->size = $size;
         if($flags&(OpenCL::CL_MEM_COPY_HOST_PTR|OpenCL::CL_MEM_USE_HOST_PTR)) {
             $this->dtype = $host_buffer->dtype();
-            $this->value_size = $host_buffer->value_size();
+            $this->valueSize = $host_buffer->valueSize();
         }
         if($dtype) {
             $this->dtype = $dtype;
-            if(!array_key_exists($dtype,self::$valueSize)) {
+            if(!array_key_exists($dtype,self::$valueSizeTable)) {
                 throw new InvalidArgumentException("unknown dtype: ".$dtype);
             }
-            $this->value_size = self::$valueSize[$dtype];
+            $this->valueSize = self::$valueSizeTable[$dtype];
         }
         if(($flags&OpenCL::CL_MEM_USE_HOST_PTR) && $host_buffer!=NULL) {
             $this->host_buffer = $host_buffer;
@@ -107,9 +107,17 @@ class Buffer implements DeviceBuffer
         return $this->dtype;
     }
 
+    public function valueSize() : int
+    {
+        return $this->valueSize;
+    }
+
+    /**
+     * @deprecated use valueSize() instead
+     */
     public function value_size() : int
     {
-        return $this->value_size;
+        return $this->valueSize;
     }
 
     public function bytes() : int
@@ -146,7 +154,7 @@ class Buffer implements DeviceBuffer
         if($size+$offset > $this->size) {
             throw new InvalidArgumentException("size is too large.", OpenCL::CL_INVALID_VALUE);
         }
-        if(((count($host_buffer) - $host_offset) * $host_buffer->value_size())<$size) {
+        if(((count($host_buffer) - $host_offset) * $host_buffer->valueSize())<$size) {
             throw new InvalidArgumentException("Host buffer is too small.", OpenCL::CL_INVALID_VALUE);
         }
         $host_ptr = $host_buffer->addr($host_offset);
@@ -289,7 +297,7 @@ class Buffer implements DeviceBuffer
                 = ($host_offsets[2]+$region[2]-1)*$host_slice_pitch
                 + ($host_offsets[1]+$region[1]-1)*$host_row_pitch
                 + ($host_offsets[0]+$region[0]-1);
-            if($pos_max >= ((count($host_buffer) - $host_buffer_offset) * $host_buffer->value_size())) {
+            if($pos_max >= ((count($host_buffer) - $host_buffer_offset) * $host_buffer->valueSize())) {
                 throw new InvalidArgumentException("Host buffer is too small.", OpenCL::CL_INVALID_VALUE);
             }
         }
@@ -367,7 +375,7 @@ class Buffer implements DeviceBuffer
         if($size+$offset > $this->size) {
             throw new InvalidArgumentException("size is too large.", OpenCL::CL_INVALID_VALUE);
         }
-        if(((count($host_buffer) - $host_offset) * $host_buffer->value_size())<$size) {
+        if(((count($host_buffer) - $host_offset) * $host_buffer->valueSize())<$size) {
             throw new InvalidArgumentException("Host buffer is too small.", OpenCL::CL_INVALID_VALUE);
         }
         $host_ptr = $host_buffer->addr($host_offset);
@@ -399,7 +407,7 @@ class Buffer implements DeviceBuffer
             throw new RuntimeException("clEnqueueWriteBuffer Error errcode=".$errcode_ret, $errcode_ret);
         }
         $this->dtype = $host_buffer->dtype();
-        $this->value_size = $host_buffer->value_size();
+        $this->valueSize = $host_buffer->valueSize();
     
         // append event to events
         if($events) {
@@ -514,7 +522,7 @@ class Buffer implements DeviceBuffer
                 = ($host_offsets[2]+$region[2]-1)*$host_slice_pitch
                 + ($host_offsets[1]+$region[1]-1)*$host_row_pitch
                 + ($host_offsets[0]+$region[0]-1);
-            if($pos_max >= ((count($host_buffer) - $host_buffer_offset) * $host_buffer->value_size())) {
+            if($pos_max >= ((count($host_buffer) - $host_buffer_offset) * $host_buffer->valueSize())) {
                 throw new InvalidArgumentException("Host buffer is too small.", OpenCL::CL_INVALID_VALUE);
             }
         }
@@ -614,11 +622,11 @@ class Buffer implements DeviceBuffer
         //if(1) {
         //    zend_throw_exception_ex(spl_ce_RuntimeException, errcode_ret, 
         //        "debug=%d,offset=%d,size=%d,pattern_size=%d,pattern_value_size=%d",
-        //        3,(int)offset,(int)size,(int)pattern_size,(int)(pattern_buffer_obj->value_size));
+        //        3,(int)offset,(int)size,(int)pattern_size,(int)(pattern_buffer_obj->valueSize));
         //    return;
         //}
         //php_printf("debug=%d,offset=%d,size=%d,pattern_size=%d,pattern_value_size=%d,sizeof(cl_float)=%d\n",
-        //        3,(int)offset,(int)size,(int)pattern_size,(int)(pattern_buffer_obj->value_size),(int)sizeof(cl_float));
+        //        3,(int)offset,(int)size,(int)pattern_size,(int)(pattern_buffer_obj->valueSize),(int)sizeof(cl_float));
         //if(num_events_in_wait_list!=0 || event_wait_list!=NULL) {
         //    zend_throw_exception_ex(spl_ce_RuntimeException, errcode_ret, 
         //    "event_wait_list is not null");
@@ -628,7 +636,7 @@ class Buffer implements DeviceBuffer
             $command_queue->_getId(),
             $this->buffer,
             $pattern_ptr,
-            ($pattern_size*($pattern_buffer->value_size())),
+            ($pattern_size*($pattern_buffer->valueSize())),
             $offset,
             $size,
             $num_events_in_wait_list,
@@ -639,7 +647,7 @@ class Buffer implements DeviceBuffer
             throw new RuntimeException("clEnqueueFillBuffer Error errcode=".$errcode_ret, $errcode_ret);
         }
         $this->dtype = $pattern_buffer->dtype();
-        $this->value_size = $pattern_buffer->value_size();
+        $this->valueSize = $pattern_buffer->valueSize();
     
         // append event to events
         if($events) {
@@ -694,7 +702,7 @@ class Buffer implements DeviceBuffer
         }
         if($this->dtype==0) {
             $this->dtype = $src_buffer->dtype();
-            $this->value_size = $src_buffer->value_size();
+            $this->valueSize = $src_buffer->valueSize();
         }
     
         // append event to events
@@ -969,7 +977,7 @@ class Buffer implements DeviceBuffer
     
     public function count() : int
     {
-        return $this->bytes()/$this->value_size();
+        return $this->bytes()/$this->valueSize();
     }
 
     public function offsetExists( $offset ) : bool
